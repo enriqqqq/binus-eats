@@ -18,10 +18,10 @@ router.get('/auth/google/callback',
     session: false
   }),
   (req, res) => {
-    const token = jwt.sign({ id: req.user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });    
+    const token = jwt.sign({ id: req.user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3h' });    
     console.log({ user: req.user, token });
-    res.cookie('x-auth-token', token); // client side should store this token in local storage and remove cookie
-    res.redirect('http://localhost:3000/'); // change this to the frontend URL
+    res.cookie('x-auth-token', token);        // client side should store this token in local storage and remove cookie
+    res.redirect('http://localhost:3000/');   // change this to the frontend URL
   }
 );
 
@@ -32,6 +32,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/protected', passport.authenticate("jwt", { session: false }), (req, res) => {
   res.json(req.user);
+});
+
+router.get('/errtest' , (req, res, next) => {
+  console.log(abc);
 });
 
 module.exports = router;

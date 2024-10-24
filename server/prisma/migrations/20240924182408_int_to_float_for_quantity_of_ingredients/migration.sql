@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "RecipeIngredient" ALTER COLUMN "quantity" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "UserIngredient" ALTER COLUMN "quantity" SET DATA TYPE DOUBLE PRECISION;

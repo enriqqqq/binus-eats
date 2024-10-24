@@ -21,4 +21,90 @@ model User {
   profilePictureUrl String
   accessToken       String?
   refreshToken      String?
+
+  ingredients       UserIngredient[] // Each user can have their own set of ingredients
+  cookwares         UserCookware[]  // Each user can have their own set of cookwares
+  recipes           Recipe[]         // Each user can create their own recipes
+}
+
+model Recipe {
+  id              String              @id @default(uuid())
+  name            String
+  instructions    String
+  user            User                @relation(fields: [userId], references: [id])
+  userId          String              // Recipe belongs to a user
+  updatedAt       DateTime            @default(now())
+  createdAt       DateTime            @default(now())
+  ingredients     RecipeIngredient[]  // Each recipe has its own set of ingredients
+  cookwares       RecipeCookware[]    // Each recipe has its own set of cookwares
+}
+
+model Ingredient {
+  id              String                @id @default(uuid())
+  name            String
+  quantityUnit    QuantityUnit
+  location        String                // Location where the user can buy the ingredient
+
+  userIngredients UserIngredient[]      // Relation to UserIngredient (pivot table)
+  recipeIngredients RecipeIngredient[]  // Relation to RecipeIngredient (pivot table)
+}
+
+model Cookware {
+  id              String            @id @default(uuid())
+  name            String
+  location        String            // Location where the user can buy the cookware
+
+  userCookware    UserCookware[]    // Relation to UserCookware (pivot table)
+  recipeCookware  RecipeCookware[]  // Relation to RecipeCookware (pivot table)
+}
+
+model RecipeIngredient {
+  id              String        @id @default(uuid())
+  quantity        Float
+  recipe          Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId        String
+  ingredient      Ingredient    @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredientId    String
+
+  @@unique([recipeId, ingredientId])
+}
+
+model RecipeCookware {
+  id              String        @id @default(uuid())
+  recipe          Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId        String
+  cookware        Cookware      @relation(fields: [cookwareId], references: [id], onDelete: Cascade)
+  cookwareId      String
+
+  @@unique([recipeId, cookwareId])
+}
+
+model UserIngredient {
+  id              String        @id @default(uuid())
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  quantity        Float
+  ingredient      Ingredient    @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredientId    String
+
+  @@unique([userId, ingredientId])
+}
+
+model UserCookware {
+  id              String        @id @default(uuid())
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  cookware        Cookware      @relation(fields: [cookwareId], references: [id], onDelete: Cascade)
+  cookwareId      String
+
+  @@unique([userId, cookwareId])
+}
+
+enum QuantityUnit {
+  KILOGRAM
+  LITER
+  CUP
+  TABLESPOON
+  TEASPOON
+  PIECE
 }
